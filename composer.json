@@ -1,0 +1,6 @@
+{
+    "name": "takotakot/cf7-add-serial-number-to-response",
+    "type": "wordpress-plugin",
+    "license": "MIT/X",
+    "require": {}
+}
