@@ -1,0 +1,97 @@
+version: '3'
+
+services:
+  mysql:
+    image: ${MYSQL_IMAGE:-mariadb:latest}
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      TZ: ${DB_TZ:-Etc/UTC}
+    ports:
+      - 3306:3306
+    volumes:
+      # data dir is exported as volume
+      - wordflow_data:/var/lib/mysql
+      # - type: bind
+      #   source: ./docker/mysql/data
+      #   target: /var/lib/mysql
+      # configs if needed
+      # - type: bind
+      #   source: ./docker_configs/mysql.cnf
+      #   target: /etc/mysql/conf.d/mysql.cnf
+    restart: always
+
+  php:
+    build:
+      context: '.'
+      dockerfile: ./docker_configs/php/Dockerfile
+      args:
+        - ENVIRONMENT=${ENVIRONMENT}
+    env_file:
+      - ./docker_configs/.env.build.${ENVIRONMENT}
+    environment:
+      WORDPRESS_DB_HOST: ${DB_HOST:-mysql}
+      WORDPRESS_DB_USER: ${DB_USER}
+      WORDPRESS_DB_PASSWORD: ${DB_PASSWORD}
+      WORDPRESS_DB_NAME: ${DB_NAME}
+    # ports:
+    #   - 9000:9000
+    volumes:
+      # - type: bind
+      #   source: ./docker_configs/php/conf.d/${ENVIRONMENT}.php.ini
+      #   target: /usr/local/etc/php/conf.d/php.ini
+      # - type: bind
+      #   source: ./docker_configs/php/php-fpm.d/zzz-www.conf
+      #   target: /usr/local/etc/php-fpm.d/zzz-www.conf
+        # source: ${pwd}/docker/php/php-fpm.d/
+        # target: /usr/local/etc/php-fpm.d/
+      # enable xdebug
+      - type: bind
+        source: "./docker_configs/xdebug.ini"
+        target: "/usr/local/etc/php/conf.d/xdebug.ini"
+      - type: bind
+        source: ./vendor/
+        target: /var/www/vendor/
+      # webroot direcotry is /var/www/web
+      - type: bind
+        source: ./bedrock/
+        target: /var/www/
+      - type: bind
+        source: ./
+        target: /var/www/web/app/plugins/${PLUGIN_DIR_NAME}/
+      # - type: bind
+      #   source: ./docker/bedrock/${ENVIRONMENT}.env
+      #   target: /var/www/html/.env
+    depends_on:
+      - mysql
+    restart: always
+
+  nginx:
+    image: ${NGINX_IMAGE:-nginx:latest}
+    # if you want ssl
+    # build:
+    #   context: '.'
+    #   dockerfile: ./docker_configs/nginx/Dockerfile
+    volumes:
+      - type: bind
+        source: ./docker_configs/nginx/conf.d/${ENVIRONMENT:-development}.conf
+        target: /etc/nginx/conf.d/default.conf
+      # webroot direcotry is /var/www/web
+      - type: bind
+        source: ./bedrock/web/
+        target: /var/www/web/
+      - type: bind
+        source: ./
+        target: /var/www/web/app/plugins/${PLUGIN_DIR_NAME}
+    ports:
+      - 80:80
+      # if you want ssl
+      # - 443:443
+    depends_on:
+      - php
+    restart: always
+
+volumes:
+  wordflow_data:
