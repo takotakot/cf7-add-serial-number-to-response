@@ -14,17 +14,19 @@
     ],
     "require": {
         "php": ">=7.4",
-        "composer/installers": "^2.0",
+        "composer/installers": "^2.1",
         "vlucas/phpdotenv": "^5.4",
         "oscarotero/env": "^2.1",
+        "roots/bedrock": "^1.19",
         "roots/bedrock-autoloader": "^1.0",
         "roots/bedrock-disallow-indexing": "^2.0",
-        "roots/wordpress": "5.9.2",
+        "roots/wordpress": "^5.9",
         "roots/wp-config": "1.0.0",
         "roots/wp-password-bcrypt": "1.1.0",
         "wpackagist-plugin/contact-form-7": "^5.5.6",
         "wpackagist-plugin/flamingo": "^2.2.3",
-        "yoast/phpunit-polyfills": "^1.0"
+        "yoast/phpunit-polyfills": "^1.0",
+        "oomphinc/composer-installers-extender": "^2.0"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^3.6.2",
@@ -35,13 +37,18 @@
         "preferred-install": "dist",
         "allow-plugins": {
             "composer/installers": true,
-            "roots/wordpress-core-installer": true
+            "roots/wordpress-core-installer": true,
+            "oomphinc/composer-installers-extender": true
         }
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
     "extra": {
+        "installer-types": ["project"],
         "installer-paths": {
+            "bedrock/": [
+                "roots/bedrock"
+            ],
             "bedrock/web/app/mu-plugins/{$name}/": [
                 "type:wordpress-muplugin"
             ],
