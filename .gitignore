@@ -1,2 +1,8 @@
-bedrock/
+/bedrock/*
 vendor/
+
+!/bedrock/config/
+/bedrock/config/*
+!/bedrock/config/environments/
+/bedrock/config/environments/*
+!/bedrock/config/environments/testing.php
