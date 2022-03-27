@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+  nginx:
+    # image: ${NGINX_IMAGE:-nginx:latest}
+    # if you want ssl
+    build:
+      context: '.'
+      dockerfile: ./docker_configs/nginx/Dockerfile
+    ports:
+      - 80:80
+      # if you want ssl
+      - 443:443
+    depends_on:
+      - php
+    restart: always
+
+volumes:
+  wordflow_data:
