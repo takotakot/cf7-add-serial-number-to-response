@@ -26,7 +26,8 @@
         "wpackagist-plugin/contact-form-7": "^5.5.6",
         "wpackagist-plugin/flamingo": "^2.2.3",
         "yoast/phpunit-polyfills": "^1.0",
-        "oomphinc/composer-installers-extender": "^2.0"
+        "oomphinc/composer-installers-extender": "^2.0",
+        "wp-phpunit/wp-phpunit": "^5.9"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^3.6.2",
@@ -61,12 +62,16 @@
         },
         "wordpress-install-dir": "bedrock/web/wp"
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/src"
+        }
+    },
     "scripts": {
         "post-root-package-install": [
             "php -r \"copy('.env.example', '.env');\""
         ],
-        "test": [
-            "phpcs"
-        ]
+        "test": "phpunit",
+        "lint": "phpcs"
     }
 }
